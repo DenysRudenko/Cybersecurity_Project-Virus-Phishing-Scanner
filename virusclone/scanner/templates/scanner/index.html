@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>VirusClone</title>
+    <link rel="stylesheet" href="{% static 'scanner/css/style.css' %}">
+</head>
+
+<body>
+    <h1>🛡️ VirusClone</h1>
+    <p>Upload a file or enter a URL to scan it for threats.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">📁 Upload File:</label><br>
+        <input type="file" name="file" id="file"><br><br>
+
+        <label for="url">🌐 Enter URL:</label><br>
+        <input type="text" name="url" id="url" placeholder="https://example.com"><br><br>
+
+        <button type="submit">Scan</button>
+    </form>
+</body>
+
+</html>
