@@ -2,6 +2,7 @@ from django.shortcuts import render
 import os
 import hashlib
 import subprocess
+import time
 from django.conf import settings
 
 UPLOAD_DIR = os.path.join(settings.BASE_DIR, 'scanner/uploads')
@@ -17,24 +18,36 @@ def home(request):
             uploaded_file_name = file.name
             file_path = os.path.join(UPLOAD_DIR, file.name)
 
+            os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+            # Save uploaded file
             with open(file_path, 'wb+') as destination:
                 for chunk in file.chunks():
                     destination.write(chunk)
 
+            time.sleep(0.2)  # Ensure OS finishes writing
+
+            # Read file for hash
+            with open(file_path, 'rb') as f:
+                file_bytes = f.read()
+                sha256_hash = hashlib.sha256(file_bytes).hexdigest()
+
+            # Scan using ClamAV
             scan = subprocess.run(
-                [settings.CLAMAV_PATH, file_path],
+                [settings.CLAMAV_PATH, uploaded_file_name],
+                cwd=UPLOAD_DIR,
                 capture_output=True,
                 text=True
             )
-            clamav_output = scan.stdout
 
-            with open(file_path, 'rb') as f:
-                sha256_hash = hashlib.sha256(f.read()).hexdigest()
+            clamav_output = scan.stdout
+            infected = "Infected files: 0" not in clamav_output
 
             result = {
                 'filename': uploaded_file_name,
                 'sha256': sha256_hash,
                 'scan_output': clamav_output,
+                'infected': infected,
             }
 
         elif 'url' in request.POST:
@@ -44,7 +57,6 @@ def home(request):
                 'scan_output': "This is a placeholder result. Real URL scanning coming soon! ✅"
             }
 
-    # ✅ Always return an HttpResponse object (even for GET requests)
     return render(request, 'scanner/index.html', {
         'result': result,
     })

@@ -28,10 +28,17 @@
         <hr>
         <h3>Scan Result</h3>
 
-        <p>✅ <b>File uploaded:</b> {{ result.filename }}</p>
+        <p>
+            {% if result.infected %}
+            ❌ <b style="color: red;">Threat Detected</b>
+            {% else %}
+            ✅ <b style="color: green;">File is Clean</b>
+            {% endif %}
+        </p>
+
+        <p>📁 <b>File uploaded:</b> {{ result.filename }}</p>
         <p>🔐 <b>SHA256:</b> <code>{{ result.sha256 }}</code></p>
         <p>🦠 <b>ClamAV Output:</b></p>
-
         <pre>{{ result.scan_output }}</pre>
         {% endif %}
 
