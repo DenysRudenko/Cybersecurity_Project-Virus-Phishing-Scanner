@@ -20,3 +20,13 @@ button {
     color: white;
     cursor: pointer;
 }
+
+pre {
+    background-color: #1a1a1a;
+    color: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+    overflow-x: auto;
+    font-size: 0.9em;
+}

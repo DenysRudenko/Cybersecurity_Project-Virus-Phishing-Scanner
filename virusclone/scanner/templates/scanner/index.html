@@ -27,8 +27,14 @@
         {% if result %}
         <hr>
         <h3>Scan Result</h3>
-        <p>{{ result }}</p>
+
+        <p>✅ <b>File uploaded:</b> {{ result.filename }}</p>
+        <p>🔐 <b>SHA256:</b> <code>{{ result.sha256 }}</code></p>
+        <p>🦠 <b>ClamAV Output:</b></p>
+
+        <pre>{{ result.scan_output }}</pre>
         {% endif %}
+
     </footer>
 
 </body>
