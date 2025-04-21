@@ -3,6 +3,7 @@ import os
 import hashlib
 import subprocess
 import time
+import requests
 from django.conf import settings
 
 UPLOAD_DIR = os.path.join(settings.BASE_DIR, 'scanner/uploads')
@@ -13,7 +14,7 @@ def home(request):
     scanned_url = None
 
     if request.method == 'POST':
-        if 'file' in request.FILES:
+        if 'file' in request.FILES and request.FILES['file'].name:
             file = request.FILES['file']
             uploaded_file_name = file.name
             file_path = os.path.join(UPLOAD_DIR, file.name)
@@ -52,10 +53,50 @@ def home(request):
 
         elif 'url' in request.POST:
             scanned_url = request.POST['url']
-            result = {
-                'url': scanned_url,
-                'scan_output': "This is a placeholder result. Real URL scanning coming soon! ✅"
+            api_key = settings.VIRUSTOTAL_API_KEY
+            vt_url = "https://www.virustotal.com/api/v3/urls"
+            print("📡 URL RECEIVED:", scanned_url)
+
+            
+
+            # Encode URL for submission
+            headers = {
+                "x-apikey": api_key
             }
+
+            # Step 1: Submit the URL to VirusTotal
+            scan_response = requests.post(vt_url, headers=headers, data={"url": scanned_url})
+            if scan_response.status_code == 200:
+                scan_id = scan_response.json()['data']['id']
+
+                # Step 2: Retrieve analysis report
+                report_url = f"https://www.virustotal.com/api/v3/analyses/{scan_id}"
+                analysis = requests.get(report_url, headers=headers).json()
+
+                stats = analysis['data']['attributes']['stats']
+                malicious_count = stats.get('malicious', 0)
+                suspicious_count = stats.get('suspicious', 0)
+
+                if malicious_count > 0:
+                    verdict = f"❌ URL flagged as **malicious** by {malicious_count} engines."
+                elif suspicious_count > 0:
+                    verdict = f"⚠️ URL flagged as **suspicious** by {suspicious_count} engines."
+                else:
+                    verdict = "✅ URL appears **clean** based on VirusTotal analysis."
+
+                result = {
+                    'url': scanned_url,
+                    'scan_output': verdict,
+                    'infected': malicious_count > 0
+                }
+
+            else:
+                result = {
+                    'url': scanned_url,
+                    'scan_output': f"❌ Failed to scan URL (status {scan_response.status_code})"
+                }
+
+
 
     return render(request, 'scanner/index.html', {
         'result': result,

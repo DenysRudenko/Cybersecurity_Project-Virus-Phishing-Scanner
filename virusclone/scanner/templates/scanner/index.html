@@ -28,6 +28,10 @@
         <hr>
         <h3>Scan Result</h3>
 
+        {% if result.url %}
+        <p>🌐 <b>URL scanned:</b> <a href="{{ result.url }}" target="_blank">{{ result.url }}</a></p>
+        {% endif %}
+
         <p>
             {% if result.infected %}
             ❌ <b style="color: red;">Threat Detected</b>
