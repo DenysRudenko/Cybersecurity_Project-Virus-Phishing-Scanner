@@ -17,6 +17,8 @@ import os
 load_dotenv()
 
 VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY")
+GOOGLE_SAFE_API = os.getenv("GOOGLE_SAFE_API")
+URL_SCAN_KEY= os.getenv("URL_SCAN_KEY")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -135,3 +137,6 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = 'home'

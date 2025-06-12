@@ -1,0 +1,163 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta and title -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Dashboard - Cyber Sentinel</title>
+
+    <!-- Custom dashboard CSS and icons -->
+    <link href="{% static 'scanner/css/dashboard.css' %}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="sb-nav-fixed">
+    <!-- ==========================
+         Top Navigation Bar
+         ========================== -->
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand ps-3" href="{% url 'home' %}">Cyber Sentinel</a>
+
+        <!-- Sidebar toggle button -->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Logout button -->
+        <ul class="navbar-nav ms-auto me-3">
+            <li class="nav-item">
+                <a class="btn btn-outline-light" href="{% url 'logout' %}">Logout</a>
+                {% csrf_token %}
+            </li>
+        </ul>
+    </nav>
+
+    <div id="layoutSidenav">
+        <!-- ==========================
+             Side Navigation Panel
+             ========================== -->
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                        <div class="sb-sidenav-menu-heading">Interface</div>
+                        <a class="nav-link" href="{% url 'url_scanner' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-link"></i></div>
+                            Scan a URL for Threats
+                        </a>
+                        <a class="nav-link" href="{% url 'file_scanner' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-file-alt"></i></div>
+                            Scan Files for Malware
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- ==========================
+             Main Content Area
+             ========================== -->
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Dashboard</h1>
+                    <p class="mb-4">Stay updated with your latest scans, detected threats, and platform usage stats in one place.</p>
+
+                    <!-- Summary cards -->
+                    <div class="row">
+                        <div class="col-xl-4 col-md-6">
+                            <div class="card bg-dark text-white mb-4">
+                                <div class="card-body d-flex flex-column align-items-start">
+                                    <i class="fas fa-check-circle fa-lg mb-2"></i>
+                                    <h5>Total Scans</h5>
+                                    <h3 class="mt-2">{{ stats.total_scans }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-md-6">
+                            <div class="card bg-danger text-white mb-4">
+                                <div class="card-body d-flex flex-column align-items-start">
+                                    <i class="fas fa-exclamation-triangle fa-lg mb-2"></i>
+                                    <h5>Detected Threats</h5>
+                                    <h3 class="mt-2">{{ stats.threats_found }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-md-6">
+                            <div class="card bg-info text-white mb-4">
+                                <div class="card-body d-flex flex-column align-items-start">
+                                    <i class="fas fa-clock fa-lg mb-2"></i>
+                                    <h5>Last Scan</h5>
+                                    <h3 class="mt-2">{{ stats.last_scan }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scan history table -->
+                    <div class="card mb-4 bg-dark text-white">
+                        <div class="card-header border-0">
+                            <h5 class="mb-0">Scan History</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>Type</th>
+                                            <th>URL or File</th>
+                                            <th>Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for scan in scan_history %}
+                                        <tr>
+                                            <td>{{ scan.timestamp }}</td>
+                                            <td>{{ scan.type }}</td>
+                                            <td>{{ scan.item }}</td>
+                                            <td class="{% if scan.result == 'Malware' %}text-danger{% elif scan.result == 'Phishing' %}text-warning{% else %}text-success{% endif %}">
+                                                {{ scan.result }}
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="4" class="text-center">No scan history found.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- ==========================
+                 Footer
+                 ========================== -->
+            <footer class="bg-dark py-4 mt-auto">
+                <div class="container px-5">
+                    <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                        <div class="col-auto">
+                            <div class="small m-0 text-white">Copyright &copy; Cyber Sentinel 2025</div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and custom scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'scanner/js/scripts.js' %}"></script>
+</body>
+</html>

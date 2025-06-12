@@ -1,0 +1,111 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic page setup -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Cyber Sentinel - Login</title>
+
+    <!-- Favicon & styles -->
+    <link rel="icon" type="image/x-icon" href="{% static 'scanner/assets/favicon.ico' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="{% static 'scanner/css/login.css' %}" rel="stylesheet" />
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<main class="flex-shrink-0">
+
+    <!-- ==========================
+         Navigation Bar
+         ========================== -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container px-5">
+            <a class="navbar-brand text-dark fw-bold" href="{% url 'home' %}">Cyber Sentinel</a>
+
+            <!-- Mobile toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Nav links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link text-dark" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" href="{% url 'register' %}">Register</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==========================
+         Login Form Section
+         ========================== -->
+    <header class="bg-dark py-5">
+        <div class="container px-5">
+            <div class="row gx-5 justify-content-center">
+                <div class="col-lg-6">
+                    <div class="card shadow-lg border-0 rounded-lg">
+
+                        <!-- Card header -->
+                        <div class="card-header bg-primary text-white text-center">
+                            <h4>Login to Your Account</h4>
+                        </div>
+
+                        <!-- Login form -->
+                        <div class="card-body p-4">
+                            <form method="post">
+                                {% csrf_token %}
+                                {{ form.non_field_errors }}
+
+                                <!-- Username field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                                    {{ form.username }}
+                                    {{ form.username.errors }}
+                                </div>
+
+                                <!-- Password field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                                    {{ form.password }}
+                                    {{ form.password.errors }}
+                                </div>
+
+                                <!-- Submit button -->
+                                <button type="submit" class="btn btn-success w-100">Login</button>
+                            </form>
+                        </div>
+
+                        <!-- Registration redirect -->
+                        <div class="card-footer text-center py-3">
+                            <div class="small">Don't have an account? <a href="{% url 'register' %}">Register here</a></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</main>
+
+<!-- ==========================
+     Footer Section
+     ========================== -->
+<footer class="bg-dark py-4 mt-auto">
+    <div class="container px-5">
+        <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+            <div class="col-auto">
+                <div class="small m-0 text-white">Copyright &copy; Cyber Sentinel 2025</div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'scanner/js/scripts.js' %}"></script>
+</body>
+</html>
