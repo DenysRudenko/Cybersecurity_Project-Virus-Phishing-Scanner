@@ -1,0 +1,161 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta and page info -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>URL Scanner - Cyber Sentinel</title>
+
+    <!-- Icons & custom CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="{% static 'scanner/css/url_scanner.css' %}" rel="stylesheet" />
+</head>
+
+<body class="d-flex flex-column h-100">
+<main class="flex-shrink-0">
+
+    <!-- ==========================
+         NAVIGATION BAR
+         ========================== -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container px-5">
+            <a class="navbar-brand text-dark fw-bold" href="{% url 'home' %}">Cyber Sentinel</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link text-dark" href="{% url 'home' %}">Home</a></li>
+
+                    {% if user.is_authenticated %}
+                        <!-- Logged-in user nav items -->
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'url_scanner' %}">URL Scan</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'file_scanner' %}">File Scan</a></li>
+
+                        <!-- Logout form trigger -->
+                        <li class="nav-item">
+                            <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display: none;">
+                                {% csrf_token %}
+                            </form>
+                            <a href="#" class="nav-link text-dark fw-normal" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                        </li>
+
+                        <!-- Username display -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fw-bold">{{ user.username }}</a>
+                        </li>
+                    {% else %}
+                        <!-- Guest nav items -->
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==========================
+         HEADER
+         ========================== -->
+    <header class="bg-dark py-5">
+        <div class="container px-5 text-center">
+            <h1 class="display-5 fw-bold text-white">
+                <img src="https://img.icons8.com/fluency/32/link.png" alt="Link Icon" style="vertical-align: middle; margin-right: 15px;">
+                Scan a URL for Threats
+            </h1>
+            <p class="text-white-50">Powered by VirusTotal, urlscan.io, and Google Safe Browsing APIs.</p>
+        </div>
+    </header>
+
+    <!-- ==========================
+         SCANNER FORM + RESULTS
+         ========================== -->
+    <section class="py-5">
+        <div class="container px-5">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="mb-3">Enter a URL to scan:</h4>
+
+                    <!-- URL scan form -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="url" name="url" id="url" class="form-control" placeholder="https://example.com" required>
+                            <button class="btn btn-primary" type="submit">Scan</button>
+                        </div>
+                    </form>
+
+                    {% if result %}
+                        <hr class="my-4">
+                        <h5>Scan Result</h5>
+
+                        <!-- Display scanned URL -->
+                        <p><b>URL scanned:</b> <a href="{{ result.url }}" target="_blank">{{ result.url }}</a></p>
+
+                        <!-- VirusTotal detection summary -->
+                        <p class="{% if result.infected %}text-danger{% else %}text-success{% endif %}">
+                            <b>VirusTotal:</b>
+                            {% if result.infected %}Threat Detected{% else %}URL is Clean{% endif %}
+                        </p>
+
+                        <!-- Raw VirusTotal output -->
+                        <p><b>VirusTotal Scan Output:</b></p>
+                        <pre>{{ result.scan_output }}</pre>
+
+                        <!-- Google Safe Browsing status -->
+                        <p class="{% if result.google_sb_flag %}text-danger{% else %}text-success{% endif %}">
+                            <b>Google Safe Browsing:</b>
+                            {% if result.google_sb_flag %}Threat Detected{% else %}No threats found.{% endif %}
+                        </p>
+
+                        <!-- Extra detail from Google Safe Browsing -->
+                        {% if result.google_sb_flag %}
+                            <p class="text-danger">{{ result.google_sb_details }}</p>
+                        {% endif %}
+
+                        <!-- Warning if VT detects but Google doesn't -->
+                        {% if result.warning_message %}
+                            <div class="alert alert-warning mt-3">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                {{ result.warning_message }}
+                            </div>
+                        {% endif %}
+
+                        <!-- URL screenshot preview from urlscan.io -->
+                        {% if result.screenshot_url %}
+                            <p><b>Screenshot (from urlscan.io):</b></p>
+                            <img src="{{ result.screenshot_url }}" alt="URL Screenshot" style="max-width: 100%; border: 1px solid #ccc;">
+                        {% endif %}
+
+                        <!-- Full external report link -->
+                        {% if result.full_report_url %}
+                            <p><b>Full report:</b> <a href="{{ result.full_report_url }}" target="_blank">{{ result.full_report_url }}</a></p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- ==========================
+     FOOTER
+     ========================== -->
+<footer class="bg-dark py-4 mt-auto">
+    <div class="container px-5">
+        <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+            <div class="col-auto">
+                <div class="small m-0 text-white">Copyright &copy; Cyber Sentinel 2025</div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

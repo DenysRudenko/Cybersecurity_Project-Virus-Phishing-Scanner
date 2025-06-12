@@ -1,0 +1,141 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta tags and page settings -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <!-- Page title and favicon -->
+    <title>Cyber Sentinel</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
+    <!-- Bootstrap Icons & Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'scanner/css/index.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="d-flex flex-column h-100">
+<main class="flex-shrink-0">
+
+    <!-- ==========================
+         Navigation Bar
+         ========================== -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container px-5">
+            <a class="navbar-brand text-dark fw-bold" href="{% url 'home' %}">Cyber Sentinel</a>
+
+            <!-- Mobile nav toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation links -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link text-dark" href="{% url 'home' %}">Home</a></li>
+
+                    {% if user.is_authenticated %}
+                        <!-- Authenticated User Links -->
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'url_scanner' %}">URL Scan</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'file_scanner' %}">File Scan</a></li>
+
+                        <!-- Logout form trigger -->
+                        <li class="nav-item">
+                            <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display: none;">
+                              {% csrf_token %}
+                            </form>
+                            <a href="#" class="nav-link text-dark fw-normal" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                              Logout
+                            </a>
+                        </li>
+
+                        <!-- Display username -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fw-bold">{{ user.username }}</a>
+                        </li>
+                    {% else %}
+                        <!-- Guest Links -->
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==========================
+         Hero Section (Header)
+         ========================== -->
+    <header class="bg-dark py-3">
+        <div class="container px-5">
+            <div class="row gx-5 align-items-center justify-content-center">
+                <div class="col-lg-8 col-xl-7 col-xxl-6">
+                    <div class="my-5 text-center text-xl-start">
+                        <h1 class="display-5 fw-bolder text-white mb-2">
+                            <i class="fas fa-shield-alt" style="margin-right:10px;"></i>
+                            Stay Ahead of Phishing & Online Threats
+                        </h1>
+                        <p class="lead fw-normal text-white-50 mb-4">
+                            CyberSentinel is your first line of defense against malicious URLs and malware.
+                            Scan suspicious links, upload files for threat analysis, and track your history – all in one intuitive platform.
+                            Empowering everyday users with the tools to browse safely and confidently!
+                        </p>
+                        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xl-start">
+                            <a class="btn btn-primary btn-lg px-4 me-sm-3" href="{% url 'register' %}">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right-side illustration -->
+                <div class="col-xl-5 col-xxl-6 d-none d-xl-block text-center">
+                    <img class="img-fluid rounded-3 my-3" src="{% static 'scanner/pictures/CyBER SENITEL.jpeg' %}" style="max-height: 570px;" alt="..." />
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================
+         Features Section
+         ========================== -->
+    <section id="features">
+        <div class="container py-1">
+            <div class="row text-center">
+                <div class="col-md-6 mb-1">
+                    <h4>URL Scanner</h4>
+                    <p>Scan suspicious links instantly to detect phishing or malicious websites before you open them.</p>
+                </div>
+                <div class="col-md-6 mb-1">
+                    <h4>File Scanner</h4>
+                    <p>Upload and analyze files in real-time to detect malware threats and ensure security.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================
+         Footer Section
+         ========================== -->
+    <footer class="bg-dark py-4 mt-auto">
+        <div class="container px-5">
+            <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                <div class="col-auto">
+                    <div class="small m-0 text-white">Copyright &copy; Cyber Sentinel 2025</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================
+         JS Dependencies
+         ========================== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/scripts.js"></script>
+</main>
+</body>
+</html>

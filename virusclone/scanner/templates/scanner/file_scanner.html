@@ -1,0 +1,144 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic meta and page settings -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Cyber Sentinel - File Scanner</title>
+
+    <!-- Favicon and stylesheets -->
+    <link rel="icon" type="image/x-icon" href="{% static 'scanner/assets/favicon.ico' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'scanner/css/file_scanner.css' %}">
+</head>
+
+<body class="d-flex flex-column h-100">
+<main class="flex-shrink-0">
+
+    <!-- ==========================
+         Navigation Bar
+         ========================== -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container px-5">
+            <a class="navbar-brand text-dark fw-bold" href="{% url 'home' %}">Cyber Sentinel</a>
+
+            <!-- Hamburger menu for mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Nav links (dynamic based on login state) -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link text-dark" href="{% url 'home' %}">Home</a></li>
+
+                    {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'url_scanner' %}">URL Scan</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'file_scanner' %}">File Scan</a></li>
+
+                        <!-- Logout link triggers hidden form -->
+                        <li class="nav-item">
+                            <form id="logout-form" method="POST" action="{% url 'logout' %}" style="display: none;">
+                                {% csrf_token %}
+                            </form>
+                            <a href="#" class="nav-link text-dark fw-normal" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Logout
+                            </a>
+                        </li>
+
+                        <!-- Display username -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fw-bold">{{ user.username }}</a>
+                        </li>
+                    {% else %}
+                        <!-- For guests -->
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="{% url 'register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==========================
+         Header Section
+         ========================== -->
+    <header class="bg-dark py-2">
+        <div class="container px-5">
+            <div class="row gx-5 align-items-center justify-content-center">
+                <div class="col-lg-8 col-xl-7">
+                    <div class="my-4 text-center text-xl-start">
+                        <h1 class="display-5 fw-bolder text-white mb-2">
+                            <img src="https://img.icons8.com/fluency/32/folder-invoices.png" alt="Folder Icon" style="vertical-align: middle; margin-right: 10px;">
+                            Scan Files for Malware
+                        </h1>
+                        <p class="lead fw-normal text-white-50 mb-4">
+                            Cyber Sentinel uses the open-source ClamAV antivirus engine to detect threats in uploaded files.
+                            Stay protected with fast detection.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================
+         File Upload & Result Section
+         ========================== -->
+    <section class="py-5 bg-light">
+        <div class="container px-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white fw-bold">File Scanner</div>
+                <div class="card-body">
+                    <!-- Upload form -->
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="file" class="form-control mb-3" name="file" required>
+                        <button class="btn btn-danger" type="submit">Upload & Scan</button>
+                    </form>
+
+                    <!-- If scan was performed, display result -->
+                    {% if result %}
+                        <hr class="my-4">
+                        <h5>Scan Result</h5>
+                        <p><b>File uploaded:</b> {{ result.filename }}</p>
+                        <p><b>SHA256:</b> <code>{{ result.sha256 }}</code></p>
+                        <p>
+                            {% if result.infected %}
+                                <b class="text-danger">Threat Detected</b>
+                            {% else %}
+                                <b class="text-success">File is Clean</b>
+                            {% endif %}
+                        </p>
+                        <p><b>ClamAV Output:</b></p>
+                        <pre>{{ result.scan_output }}</pre>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- ==========================
+     Footer
+     ========================== -->
+<footer class="bg-dark py-4 mt-auto">
+    <div class="container px-5">
+        <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+            <div class="col-auto">
+                <div class="small m-0 text-white">Copyright &copy; Cyber Sentinel 2025</div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
